@@ -1,10 +1,11 @@
 // ten plik odpowiada tylko za routing! :) 
 const express = require('express')
 const bodyParser = require('body-parser')
+const { ObjectID } = require('mongodb')
 
-const {mongoose} = require('./db/mongoose')
-const {Todo} = require('./models/todo')
-const {User} = require('./models/user')
+const { mongoose } = require('./db/mongoose')
+const { Todo } = require('./models/todo')
+const { User } = require('./models/user')
 
 const app = express()
 
@@ -34,9 +35,28 @@ app.post('/todos', (req, res) => {
 //pobierze wszystkie dokumenty (wiersze) kolekcji (tabeli) todos
 app.get('/todos', (req, res) => {
   Todo.find().then((todos) => {
-    res.send({todos})
+    res.send({ todos })
   }, (e) => {
     res.status(400).send(e)
+  })
+})
+
+//POBRANIE WARTOSCI ADRESU Z ID
+//GET /todos/12345    <- pobranie 12345
+app.get('/todos/:id', (req, res) => {
+  const id = req.params.id
+
+  if (!ObjectID.isValid(id)) { // najpierw walidacja (czy id w ogole jest OK)
+    return res.status(404).send()
+  }
+
+  Todo.findById(id).then((todo) => {
+    if (!todo) {
+      return res.status(404).send()
+    }
+    res.status(200).send({ todo })
+  }).catch((e) => {
+    return res.status(400).send()
   })
 })
 
