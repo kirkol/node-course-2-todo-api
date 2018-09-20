@@ -1,3 +1,4 @@
+const _ = require('lodash')
 const express = require('express')
 const bodyParser = require('body-parser')
 const { ObjectID } = require('mongodb')
@@ -65,6 +66,36 @@ app.delete('/todos/:id', (req, res) => {
   }).catch((e) => {
     return res.status(400).send()
   })
+})
+
+app.patch('/todos/:id', (req, res) => {
+  const id = req.params.id
+
+  //funkcja pick() z obiektu, np. {a:1, text:"aaa", completed:"yes", bbb:3}
+  //tworzy obiekt jedynie z wlasnosciami wskazanymi w arrayu z drugiego argumentu
+  //czyli tu: {text:"aaa", completed:"yes"}
+  const body = _.pick(req.body, ['text', 'completed'])
+
+  if(!ObjectID.isValid(id)){
+    return res.status(404).send()
+  }
+
+  if(_.isBoolean(body.completed) && body.completed){
+    body.completedAt = new Date().getTime()
+  }else{
+    body.completed = false
+    body.completedAt = null
+  }
+
+  Todo.findOneAndUpdate(id, {$set: body}, {new: true}).then((todo) => {
+    if(!todo){
+      return res.status(404).send()
+    }
+    res.send({todo})
+  }).catch((e) => {
+    res.status(400).send()
+  })
+
 })
 
 //TUTAJ ZAMIAST 3000 JEST PORT!!!
