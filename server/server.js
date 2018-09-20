@@ -1,3 +1,5 @@
+require('./config/config')
+
 const _ = require('lodash')
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -10,7 +12,7 @@ const { User } = require('./models/user')
 const app = express()
 
 // zmienna bedzie automatycznie ustawiona przez Heroku lub domyslnie bedzie port 3000
-const port = process.env.PORT || 3000 
+const port = process.env.PORT
 
 app.use(bodyParser.json())
 
@@ -87,7 +89,7 @@ app.patch('/todos/:id', (req, res) => {
     body.completedAt = null
   }
 
-  Todo.findOneAndUpdate(id, {$set: body}, {new: true}).then((todo) => {
+  Todo.findOneAndUpdate({_id: id}, {$set: body}, {new: true}).then((todo) => {
     if(!todo){
       return res.status(404).send()
     }
