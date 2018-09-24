@@ -67,6 +67,28 @@ UserSchema.methods.toJSON = function() {
   return _.pick(userObject, ['_id', 'email'])
 }
 
+//statics jest jak methods. Methods zwraca metody dostepne dla instancji, natomiast
+//statics zwraca metody dostepne dla calego modelu/schemy ;)
+UserSchema.statics.findByToken = function(token) {
+  //tutaj this dotyczy calego modelu, wiec 
+  const User = this
+  let decoded = ''
+
+  //try/catch, bo funkcja jwt.verify zwroci error, gdy token nie bedzie prawidlowy
+  //tj. ktos po stronie usera grzebal przy nim i warto wychwycic takie adresy z 
+  try{
+    decoded = jwt.verify(token, 'abc12345')
+  }catch(e){
+    return Promise.reject()
+  }
+  //jesli funkcja verify sie powiedzie, to szukamy usera za pomoca tokena i juz wiemy kto to :)
+  return User.findOne({
+    '_id': decoded._id,
+    'tokens.token': token,
+    'tokens.access': 'auth'
+  })
+}
+
 const User = mongoose.model('User', UserSchema)
 
 module.exports = { User }

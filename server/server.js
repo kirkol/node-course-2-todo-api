@@ -8,6 +8,7 @@ const { ObjectID } = require('mongodb')
 const { mongoose } = require('./db/mongoose')
 const { Todo } = require('./models/todo')
 const { User } = require('./models/user')
+const {authenticate} = require('./middleware/authenticate')
 
 const app = express()
 
@@ -72,10 +73,6 @@ app.delete('/todos/:id', (req, res) => {
 
 app.patch('/todos/:id', (req, res) => {
   const id = req.params.id
-
-  //funkcja pick() z obiektu, np. {a:1, text:"aaa", completed:"yes", bbb:3}
-  //tworzy obiekt jedynie z wlasnosciami wskazanymi w arrayu z drugiego argumentu
-  //czyli tu: {text:"aaa", completed:"yes"}
   const body = _.pick(req.body, ['text', 'completed'])
 
   if(!ObjectID.isValid(id)){
@@ -118,6 +115,12 @@ app.post('/users', (req, res) => {
     res.status(400).send(e)
   })
 
+})
+
+//GET pojedynczego usera
+//drugi argument wskazuje, ze uzywamy tu funkcji middleware (tu: funkcja authenticate)
+app.get('/users/me', authenticate, (req, res) => {
+  res.send(req.user)
 })
 
 //TUTAJ ZAMIAST 3000 JEST PORT!!!
