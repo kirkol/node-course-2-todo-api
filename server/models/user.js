@@ -59,6 +59,8 @@ UserSchema.methods.generateAuthToken = function () {
 UserSchema.methods.removeToken = function(token) {
   const user = this
   return user.update({
+    //$pull to funkcja mongoose, ktora pozwala na wyrzucenie czegos z ciagu, jesli jest spelniony warunek
+    //tu: jesli jest taki token, to zostanie usuniety z ciagu tokenow przypisanych do usera ;)
     $pull: {
       tokens: { token }
     }
