@@ -100,6 +100,26 @@ app.patch('/todos/:id', (req, res) => {
 
 })
 
+// POST /users
+app.post('/users', (req, res) => {
+
+  const body = _.pick(req.body, ['email', 'password'])
+  const user = new User({
+    email: body.email,
+    password: body.password
+  })
+
+  user.save().then(() => {
+    return user.generateAuthToken()
+  }).then((token) => {
+    //zwracamy nasz token w naglowku odpowiedzi :)
+    res.header('x-auth', token).send(user)
+  }).catch((e) => {
+    res.status(400).send(e)
+  })
+
+})
+
 //TUTAJ ZAMIAST 3000 JEST PORT!!!
 app.listen(port, () => {
   console.log(`Started up at port ${port}`)
