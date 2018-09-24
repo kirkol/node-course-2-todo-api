@@ -56,6 +56,15 @@ UserSchema.methods.generateAuthToken = function () {
   })
 }
 
+UserSchema.methods.removeToken = function(token) {
+  const user = this
+  return user.update({
+    $pull: {
+      tokens: { token }
+    }
+  })
+}
+
 //tutaj uzywamy UserSchema, zeby nadpisac metode. Domyslnie metoda ta zwraca caly obiekt JSON,
 //tj. wszystko nt. naszego usera, a nie wolno zwracac nam passworda i ciagu tokenow
 //wiec nadpisujemy te metode ;)

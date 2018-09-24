@@ -285,7 +285,6 @@ describe('POST /users/login', () => {
           return done(err)
         }
         User.findById(users[1]._id).then((user) => {
-          //TU ZMIENILAM NA NOT CONTAINS, BO TEN TEST NIE DZIALA DO KONCA JAKBYM CHCIALA
           expect(user.tokens.length).toBe[0]
           done()
         }).catch((e) => done(e))
