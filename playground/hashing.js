@@ -1,24 +1,22 @@
 const {SHA256} = require('crypto-js') //funkcja hashujaca (szyfrujaca)
 const jwt = require('jsonwebtoken') // biblioteka hashujaca i saltujaca - patrz tlumaczenie wyzej ;)
+const bcrypt = require('bcryptjs') // biblioteka hashujaca i saltujaca (jw. ale inna ;))
 
-const data = {
-  id: 10
-}
+const password = '123abc!'
 
+bcrypt.genSalt(10, (err, salt) => {
+  bcrypt.hash(password, salt, (err, hash) => {
+    console.log(hash)
+  })
+})
 
-// podpisuje, czyli tworzy hasha dla danych wysylanych userowi (z jego id)
-// drugim argumentem jest nasz secretstring (dla saltingu)
-// ten token (obiekt z data i hashem) wysylamy userowi, gdy ten sie zaloguje
-// kazdy kolejny request od usera bedzie szedl z tym tokenem, zeby bylo wiadomo, ze on to on ;)
-// ten token bedzie tez przechowywany w naszej bazie dla kazdgeo usera
-const token = jwt.sign(data, '123abc')
+const hashedPassword = '$2a$10$P7Q9cFR.8WjOUiSKtYeBruNbtMNqgpT7zUYjZzOf8z1C8YbUeIjSu'
 
-// funkcja sprawdzajaca czy token przyslany z requestem usera nie zostal podmieniony
-// jako argument przyjmuje ten sam secretstring - dzieki temu sprawdza czy wszystko sie zgadza
-// czy nic nie zostalo podmienione
-// jesli cos nie halo, to funkcja ponizej zwroci nam blad, ktory mozemy sobie obsluzyc, jesli chcemy ;)
-const decoded = jwt.verify(token, '123abc')
-
+//porownanie czy password = temu zahashowanemu przez bcryptjs
+//res to true/false :)
+bcrypt.compare(password, hashedPassword, (err, res) => {
+  console.log(res)
+})
 
 
 
@@ -32,6 +30,28 @@ const decoded = jwt.verify(token, '123abc')
 
 
 
+//PRZYKLAD JWT
+
+// const data = {
+//   id: 10
+// }
+
+
+// // podpisuje, czyli tworzy hasha dla danych wysylanych userowi (z jego id)
+// // drugim argumentem jest nasz secretstring (dla saltingu)
+// // ten token (obiekt z data i hashem) wysylamy userowi, gdy ten sie zaloguje
+// // kazdy kolejny request od usera bedzie szedl z tym tokenem, zeby bylo wiadomo, ze on to on ;)
+// // ten token bedzie tez przechowywany w naszej bazie dla kazdgeo usera
+// const token = jwt.sign(data, '123abc')
+
+// // funkcja sprawdzajaca czy token przyslany z requestem usera nie zostal podmieniony
+// // jako argument przyjmuje ten sam secretstring - dzieki temu sprawdza czy wszystko sie zgadza
+// // czy nic nie zostalo podmienione
+// // jesli cos nie halo, to funkcja ponizej zwroci nam blad, ktory mozemy sobie obsluzyc, jesli chcemy ;)
+// const decoded = jwt.verify(token, '123abc')
+
+
+//PRZYKLAD HASHINGU I SALTINGU (BEZ BIBLIOTEK)
 
 // const message = 'I am user number 3'
 // const hash = SHA256(message).toString() //zaszyfrowanie message i konwesja do Stringa

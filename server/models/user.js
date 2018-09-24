@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const validator = require('validator') // modul do walidowania wartosci pól
 const jwt = require('jsonwebtoken')
 const _ = require('lodash')
+const bcrypt = require('bcryptjs')
 
 //Schema przechowuje wszystkie wlasnosci modelu (schemat)
 //Mozna to zrobic bezposrednio w samym modelu (przekazujac obiekt opisany w Schema do modelu)
@@ -88,6 +89,23 @@ UserSchema.statics.findByToken = function(token) {
     'tokens.access': 'auth'
   })
 }
+
+//uzycie middleware'a mongoose (cos a'la trigger before insert/update)
+//tu: before save (czyli zanim cos zapiszemy (zainsertujemy) w naszej bazie)
+UserSchema.pre('save', function(next){
+  const user = this
+  //isModified sprawdza czy password jest modyfikowany
+  if(user.isModified('password')){
+    bcrypt.genSalt(10, (err, salt) => {
+      bcrypt.hash(user.password, salt, (err, hash) => {
+        user.password = hash
+        next()
+      })
+    })
+  }else{
+    next()
+  }
+})
 
 const User = mongoose.model('User', UserSchema)
 
