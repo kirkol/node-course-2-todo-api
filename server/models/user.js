@@ -47,7 +47,7 @@ UserSchema.methods.generateAuthToken = function () {
   const access = 'auth'
   //tworzymy token - w obiekcie z pierwszego argumentu przekazujemy pole, ktore bedzie wykorzystywane
   //do autoryzacji naszego usera - najprosciej: jego id :D
-  const token = jwt.sign({_id: user._id.toHexString(), access}, 'abc12345').toString()
+  const token = jwt.sign({_id: user._id.toHexString(), access}, process.env.JWT_SECRET).toString()
 
   user.tokens = user.tokens.concat([{access, token}])
 
@@ -89,7 +89,7 @@ UserSchema.statics.findByToken = function(token) {
   //try/catch, bo funkcja jwt.verify zwroci error, gdy token nie bedzie prawidlowy
   //tj. ktos po stronie usera grzebal przy nim i warto wychwycic takie adresy z 
   try{
-    decoded = jwt.verify(token, 'abc12345')
+    decoded = jwt.verify(token, process.env.JWT_SECRET)
   }catch(e){
     return Promise.reject()
   }

@@ -128,7 +128,7 @@ describe('DELETE /todos/:id', () => {
     })
   })
 
-  it('should remove a todo', (done) => {
+  it('should not remove a todo created by other user', (done) => {
     const hexId = todos[0]._id.toHexString()
     
     request(app)
