@@ -14,6 +14,13 @@ const Todo = mongoose.model('Todo', {
   completedAt: {
     type: Number,
     default: null
+  },
+  //przechowuje id usera, ktory stworzyl to todo
+  //spoko sprawa, bo pole jest wymagane, zatem bez id (bez zalogowania)
+  //nie da sie stworzyc posta
+  _creator: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true
   }
 })
 
