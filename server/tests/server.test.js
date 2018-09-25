@@ -295,7 +295,6 @@ describe('POST /users', () => {
 })
 
 describe('POST /users/login', () => {
-  // TEN TEST NIE PRZECHODZI
   it('should login user and return auth token', (done) => {
     request(app)
       .post('/users/login')
@@ -312,8 +311,7 @@ describe('POST /users/login', () => {
           return done(err)
         }
         User.findById(users[1]._id).then((user) => {
-          //TU ZMIENILAM NA NOT CONTAINS, BO TEN TEST NIE DZIALA DO KONCA JAKBYM CHCIALA
-          expect(user.tokens[1]).not.toContain({
+          expect(user.toObject().tokens[1]).toMatchObject({
             access: 'auth',
             token: res.headers['x-auth']
           })
